@@ -1,6 +1,8 @@
 # BrilliantAfrica2G
 
 ![brilliantAfrica Landing Page](/screenshots/brilliantAfrica.png)
+> ⚠️ **Disclaimer**: The website is currently under development and not yet in production. Features may change, and some functionality may be incomplete.
+
 **AI-powered EdTech for Africa**  
 Accessible learning via SMS & USSD for students without smartphones or stable internet.
 
