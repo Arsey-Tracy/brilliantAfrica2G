@@ -13,12 +13,12 @@ sandbox_api_key = settings.AFRICASTALKING_SANDBOX_API_KEY
 live_username = settings.AFRICASTALKING_LIVE_USERNAME
 live_api_key = settings.AFRICASTALKING_LIVE_API_KEY
 # Initialize Africa's Talking
-africastalking.initialize(username="sandbox", api_key="atsk_b0ac92df5a36f03ca8e19d712688e31e3f41da249e3ebd9a273f1515bbe104bcff3234b5")
+africastalking.initialize(username="sandbox", api_key="atsk_your_key")
 sms = africastalking.SMS
 
 GEMINI_API_KEY = settings.GEMINI_API_KEY
 # Initialize Google Generative AI
-genai.configure(api_key="AIzaSyA5dg9Krl2ZPIH44PTg0_V6q-7FCmu75PI")
+genai.configure(api_key="AI_API_KEY")
 model = genai.GenerativeModel("gemini-2.0-flash")
 
 

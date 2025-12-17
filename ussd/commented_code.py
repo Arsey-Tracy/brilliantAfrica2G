@@ -32,6 +32,8 @@ def split_message(message, chunk_size=160, command="NEXT"):
     return messages
     # return [message[i:i + chunk_size] for i in range(0, len(message), chunk_size)]
 
+def send_sms_chunk():
+    pass
 
 def send_sms_async(phone_number, message):
     """
