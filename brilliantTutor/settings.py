@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)mxva&m*05^9!6i$n@=l5krgxuu=o1yn=npu48=h9%k_p9c%pv'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-)mxva&m*05^9!6i$n@=l5krgxuu=o1yn=npu48=h9%k_p9c%pv')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
 # Application definition
@@ -37,11 +42,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'ussd',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -80,6 +87,15 @@ DATABASES = {
     }
 }
 
+# PostgreSQL for production
+# Uncomment below and set DATABASE_URL environment variable for production
+# if os.getenv('DATABASE_URL'):
+#     import dj_database_url
+#     DATABASES['default'] = dj_database_url.config(
+#         default=os.getenv('DATABASE_URL'),
+#         conn_max_age=600
+#     )
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -112,8 +128,118 @@ USE_I18N = True
 USE_TZ = True
 
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.2/howto/static-files/
+
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ===== API KEYS & CREDENTIALS =====
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
+GENAI_MODEL = os.getenv('GENAI_MODEL', 'gemini-2.0-flash')
+
+AFRICASTALKING_SANDBOX_USERNAME = os.getenv('AFRICASTALKING_SANDBOX_USERNAME', 'sandbox')
+AFRICASTALKING_SANDBOX_API_KEY = os.getenv('AFRICASTALKING_SANDBOX_API_KEY', '')
+AFRICASTALKING_LIVE_USERNAME = os.getenv('AFRICASTALKING_LIVE_USERNAME', '')
+AFRICASTALKING_LIVE_API_KEY = os.getenv('AFRICASTALKING_LIVE_API_KEY', '')
+
+MPESA_SHORTCODE = os.getenv('MPESA_SHORTCODE', '174379')
+FLUTTERWAVE_API_KEY = os.getenv('FLUTTERWAVE_API_KEY', '')
+STRIPE_API_KEY = os.getenv('STRIPE_API_KEY', '')
+
+# ===== CACHING =====
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'brilliant-africa-cache',
+        'TIMEOUT': 300,
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000
+        }
+    }
+}
+
+# ===== CORS SETTINGS =====
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:8000,http://127.0.0.1:8000').split(',')
+CORS_ALLOW_CREDENTIALS = True
+
+# ===== LOGGING =====
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'brilliant.log',
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'ussd': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
+
+# Create logs directory if it doesn't exist
+os.makedirs(BASE_DIR / 'logs', exist_ok=True)
+
+# ===== SECURITY SETTINGS =====
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+# ===== SESSION SETTINGS =====
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+SESSION_COOKIE_AGE = 86400 * 7  # 7 days
+
+# ===== PAYMENT SETTINGS =====
+SUBSCRIPTION_DURATION_DAYS = 30  # Days per subscription period
+
+# ===== AI SETTINGS =====
+MAX_AI_RESPONSE_LENGTH = 1000
+AI_RESPONSE_TIMEOUT = 30  # seconds
+
+
+# Internationalization
+# https://docs.djangoproject.com/en/5.2/topics/i18n/
+
+LANGUAGE_CODE = 'en-us'
+
+TIME_ZONE = 'UTC'
+
+USE_I18N = True
+
+USE_TZ = True
+
+
 GEMINI_API_KEY = "AIzaSyA5dg9Krl2ZPIH44PTg0_V6q-7FCmu75PI"
 
+GENAI_MODEL = "gemini-2.0-flush"
 AFRICASTALKING_SANDBOX_USERNAME = "sandbox"
 AFRICASTALKING_SANDBOX_API_KEY = "atsk_b0ac92df5a36f03ca8e19d712688e31e3f41da249e3ebd9a273f1515bbe104bcff3234b5"
 AFRICASTALKING_LIVE_USERNAME = "YOUR_LIVE_USERNAME_HERE"
